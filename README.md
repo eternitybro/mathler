@@ -46,7 +46,9 @@ Mathler is a mathematical puzzle game inspired by Wordle. Players attempt to gue
    npm run test
    ```
    
-5. Open [http://localhost:3001](http://localhost:3001) in your browser to play the game.
+6. Open [http://localhost:3001](http://localhost:3001) in your browser to play the game.
+
+7. Use the api for validation or your own game generation [http://localhost:3001/api/daily?forceRefresh=true](http://localhost:3001/api/daily?forceRefresh=true) ... using forceRefresh will clear the daily problem.
 
 ## Project Structure
 

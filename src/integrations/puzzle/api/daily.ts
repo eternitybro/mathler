@@ -6,8 +6,8 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const slots = parseInt(searchParams.get('slots') || DEFAULT_COLS.toString(), 10);
-    
-    const puzzleData = await getDailyPuzzle({ slots });
+    const forceRefresh = searchParams.get('forceRefresh') === 'true';
+    const puzzleData = await getDailyPuzzle({ slots, forceRefresh });
     const validatedPuzzle = validatePuzzleData(puzzleData);
     if (validatedPuzzle) {
       return new Response(
@@ -17,18 +17,19 @@ export async function GET(request: Request) {
     } else {
       return new Response(
         JSON.stringify({
-          error: 'Failed to retrieve puzzle.',
+          error: 'Failed to validate puzzle data.',
         }),
-        { status: 200, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       )
     }
   } catch (error) {
     console.error('Error in GET request:', error);
     return new Response(
       JSON.stringify({
-        error,
+        error: error instanceof Error ? error.message : 'An unknown error occurred',
+        stack: error instanceof Error ? error.stack : undefined,
       }),
-      { status: 500 }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     )    
   }
 }

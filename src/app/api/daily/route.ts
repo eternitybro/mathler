@@ -1,4 +1,1 @@
-// export { GET } from "@/integrations/puzzle/api/daily"
-
-// export const runtime = "edge"
-export {}
+export { GET } from "@/integrations/puzzle/api/daily"
