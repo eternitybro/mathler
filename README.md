@@ -1,6 +1,6 @@
 # Mathler
 
-Mathler is a mathematical puzzle game inspired by Wordle. Players attempt to guess a hidden mathematical equation that equals a given target number within a limited number of tries.
+Mathler is a mathematical puzzle game inspired by Wordle built in NextJS. Players attempt to guess a hidden mathematical equation that equals a given target number within a limited number of tries.
 
 ## Features
 
@@ -21,7 +21,7 @@ Mathler is a mathematical puzzle game inspired by Wordle. Players attempt to gue
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/mathler.git
+   git clone https://github.com/eternitybro/mathler.git
    cd mathler
    ```
 
