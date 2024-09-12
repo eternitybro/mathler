@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import { Puzzle as PrismaPuzzle } from '@prisma/client';
 
 export const PuzzleDataSchema = z.object({
   equation: z.string(),
@@ -11,8 +11,8 @@ export const PuzzleInputSchema = PuzzleDataSchema.extend({
 });
 
 export type PuzzleData = z.infer<typeof PuzzleDataSchema>;
-export type PuzzleInput = z.infer<typeof PuzzleInputSchema>;
-export type Puzzle = Prisma.PuzzleGetPayload<Prisma.PuzzleDefaultArgs>;
+export type PuzzleInput = z.infer<typeof PuzzleInputSchema>; 
+export type Puzzle = PrismaPuzzle;
 
 export function validatePuzzleData(data: unknown): PuzzleData {
   return PuzzleDataSchema.parse(data);
