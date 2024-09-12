@@ -14,7 +14,13 @@ import { Position } from '@/types/position';
 // 132 – 59
 
 
-export const useSolver = (targetNumber: number | null, solution: string | null, length: number) => {
+export type UseSolverProps = {
+  targetNumber: number | null;
+  solution: string | null;
+  slots: number;
+};
+
+export const useSolver = ({ targetNumber, solution, slots }: UseSolverProps) => {
   const [initialized, setInitialized] = useState(false);
 
   const initialize = useCallback(() => {
@@ -24,14 +30,14 @@ export const useSolver = (targetNumber: number | null, solution: string | null, 
   }, [targetNumber, solution]);
 
   const checkGuess = useCallback((guess: string): Position[] => {
-    if (!initialized || !solution) return Array(length).fill('absent');
+    if (!initialized || !solution) return Array(slots).fill('absent');
 
-    const result: Position[] = Array(length).fill('absent');
+    const result: Position[] = Array(slots).fill('absent');
     const solutionChars = solution.split('');
     const guessChars = guess.split('');
 
     // Check for correct positions
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < slots; i++) {
       if (guessChars[i] === solutionChars[i]) {
         result[i] = 'correct';
         solutionChars[i] = '';
@@ -40,7 +46,7 @@ export const useSolver = (targetNumber: number | null, solution: string | null, 
     }
 
     // Check for present but misplaced characters
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < slots; i++) {
       if (guessChars[i] && solutionChars.includes(guessChars[i])) {
         result[i] = 'present';
         solutionChars[solutionChars.indexOf(guessChars[i])] = '';
@@ -48,7 +54,7 @@ export const useSolver = (targetNumber: number | null, solution: string | null, 
     }
 
     return result;
-  }, [initialized, solution, length]);
+  }, [initialized, solution, slots]);
 
   const validateGuess = useCallback((guess: string): boolean => {
     if (!initialized || targetNumber === null) return false;

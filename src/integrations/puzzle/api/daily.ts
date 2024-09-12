@@ -1,45 +1,34 @@
-import { NextResponse } from 'next/server';
+import { DEFAULT_COLS } from '@/config';
+import { getDailyPuzzle } from '../get-daily';
+import { validatePuzzleData } from '@/types/puzzle';
 
-import { savePuzzle, getPuzzleForDate, getAllPuzzles } from '../utils/puzzle-db';
-import { generateValidEquation } from '../utils/equation-generator';
-
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    let puzzle = await getPuzzleForDate(today);
-
-    if (puzzle) {
-      return NextResponse.json({ result: puzzle.result, equation: puzzle.equation });
+    const { searchParams } = new URL(request.url);
+    const slots = parseInt(searchParams.get('slots') || DEFAULT_COLS.toString(), 10);
+    
+    const puzzleData = await getDailyPuzzle({ slots });
+    const validatedPuzzle = validatePuzzleData(puzzleData);
+    if (validatedPuzzle) {
+      return new Response(
+        JSON.stringify(validatedPuzzle),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      )
     } else {
-      const allPuzzles = await getAllPuzzles();
-      let newPuzzle: { equation: string; result: number };
-      let attempts = 0;
-      const maxAttempts = 100;
-
-      do {
-        newPuzzle = generateValidEquation(1, 999);
-        attempts++;
-      } while (
-        allPuzzles.some((p: { equation: string; result: number }) => p.equation === newPuzzle.equation || p.result === newPuzzle.result) &&
-        attempts < maxAttempts
-      );
-
-      if (attempts === maxAttempts) {
-        throw new Error("Failed to generate a unique puzzle after maximum attempts");
-      }
-
-      puzzle = await savePuzzle({
-        date: today,
-        equation: newPuzzle.equation,
-        result: newPuzzle.result
-      });
-
-      return NextResponse.json({ result: puzzle.result, equation: puzzle.equation });
+      return new Response(
+        JSON.stringify({
+          error: 'Failed to retrieve puzzle.',
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      )
     }
   } catch (error) {
-    console.error('Error generating daily puzzle:', error);
-    return NextResponse.json({ error: 'Failed to generate daily puzzle' }, { status: 500 });
+    console.error('Error in GET request:', error);
+    return new Response(
+      JSON.stringify({
+        error,
+      }),
+      { status: 500 }
+    )    
   }
 }

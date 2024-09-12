@@ -5,28 +5,33 @@ import { useSolver } from '../hooks/useSolver';
 import { GameBoard } from './ui/game-board';
 import { Keyboard } from './ui/keyboard';
 import { Position } from '@/types/position';
+import { DEFAULT_COLS, DEFAULT_ROWS } from '@/config';
+import FinalScreen from './final-screen';
+import { generateShareString } from '@/lib/utils';
 
-const EXPRESSION_LENGTH = 6;
-const MAX_GUESSES = 6;
+const MAX_GUESSES = DEFAULT_ROWS;
 
 interface MathlerGameProps {
   targetNumber: number;
   solution: string;
+  slots?: number
 }
 
-export const MathlerGame: React.FC<MathlerGameProps> = ({ targetNumber, solution }) => {
-  const { initialize, checkGuess } = useSolver(targetNumber, solution, EXPRESSION_LENGTH);
+export const MathlerGame: React.FC<MathlerGameProps> = ({ targetNumber, solution, slots = DEFAULT_COLS }) => {
+  const { initialize, checkGuess } = useSolver({ targetNumber, solution, slots });
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState('');
   const [gameState, setGameState] = useState<'playing' | 'won' | 'lost'>('playing');
   const [usedInputs, setUsedInputs] = useState<Record<string, Position>>({});
+  const [shareString, setShareString] = useState('')
+
 
   useEffect(() => {
     initialize();
   }, [initialize]);
 
   const handleInputClick = (input: string) => {
-    if (currentGuess.length < EXPRESSION_LENGTH && gameState === 'playing') {
+    if (currentGuess.length < slots && gameState === 'playing') {
       setCurrentGuess(prev => prev + input);
     }
   };
@@ -36,7 +41,7 @@ export const MathlerGame: React.FC<MathlerGameProps> = ({ targetNumber, solution
   };
 
   const handleEnter = () => {
-    if (currentGuess.length === EXPRESSION_LENGTH && guesses.length < MAX_GUESSES) {
+    if (currentGuess.length === slots && guesses.length < MAX_GUESSES) {
       const newGuesses = [...guesses, currentGuess];
       setGuesses(newGuesses);
 
@@ -72,6 +77,12 @@ export const MathlerGame: React.FC<MathlerGameProps> = ({ targetNumber, solution
     return checkGuess(guess)[index];
   };
 
+  useEffect(() => {
+    setShareString(generateShareString(guesses, getGuessState, MAX_GUESSES, slots))
+    console.log(shareString)
+  }, [slots, guesses, getGuessState, MAX_GUESSES])
+
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white text-black">
       <h1 className="text-4xl font-bold mb-2">Mathler</h1>
@@ -79,7 +90,7 @@ export const MathlerGame: React.FC<MathlerGameProps> = ({ targetNumber, solution
       <GameBoard
         guesses={guesses}
         currentGuess={currentGuess}
-        expressionLength={EXPRESSION_LENGTH}
+        slots={slots}
         maxGuesses={MAX_GUESSES}
         getGuessState={getGuessState}
       />
@@ -89,9 +100,32 @@ export const MathlerGame: React.FC<MathlerGameProps> = ({ targetNumber, solution
         onEnter={handleEnter}
         usedInputs={usedInputs}
       />
+
       {gameState !== 'playing' && (
-        <div className="text-2xl font-bold mt-4">
-          {gameState === 'won' ? 'Congratulations! You won!' : 'Game Over. Try again!'}
+        <div className="fixed top-0 left-0 w-full h-full bg-white/90 flex items-center justify-center backdrop-blur-sm">
+          <FinalScreen
+            won={gameState === 'won'}
+            guesses={guesses}
+            solution={solution}
+            onClose={() => {
+              setGameState('playing');
+              setGuesses([]);
+              setCurrentGuess('');
+              setUsedInputs({});
+            }}
+            onShare={() => {
+
+              navigator.clipboard.writeText(shareString)
+                .then(() => alert('Result copied to clipboard!'))
+                .catch(err => console.error('Failed to copy: ', err));
+            }}
+            onKeepPlaying={() => {
+              setGameState('playing');
+              setGuesses([]);
+              setCurrentGuess('');
+              setUsedInputs({});
+            }}
+          />
         </div>
       )}
     </div>

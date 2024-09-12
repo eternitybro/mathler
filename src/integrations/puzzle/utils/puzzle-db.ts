@@ -1,31 +1,48 @@
 import { PrismaClient } from '@prisma/client'
+import { Puzzle, validatePuzzleInput } from '@/types/puzzle'
 
 const prisma = new PrismaClient()
 
-export async function getPuzzles() {
+export const getPuzzles = async (): Promise<Puzzle[]> => {
   return prisma.puzzle.findMany({
     orderBy: { date: 'desc' },
   })
 }
 
-export async function savePuzzle(puzzle: { date: Date; equation: string; result: number }) {
+export const savePuzzle = async (puzzleData: unknown): Promise<Puzzle> => {
+  const validatedPuzzle = validatePuzzleInput(puzzleData);
   return prisma.puzzle.create({
-    data: puzzle,
+    data: validatedPuzzle,
   })
 }
 
-export async function getLatestPuzzle() {
+export const getLatestPuzzle = async (): Promise<Puzzle | null> => {
   return prisma.puzzle.findFirst({
     orderBy: { date: 'desc' },
   })
 }
 
-export async function getPuzzleForDate(date: Date) {
-  return prisma.puzzle.findUnique({
-    where: { date },
+export const getPuzzleForDate = async (date: Date): Promise<Puzzle | null> => {
+  return prisma.puzzle.findFirst({
+    where: {
+      date: {
+        gte: date,
+        lt: new Date(date.getTime() + 24 * 60 * 60 * 1000),
+      },
+    },
   })
 }
 
-export async function getAllPuzzles() {
+export const getAllPuzzles = async (): Promise<Puzzle[]> => {
   return prisma.puzzle.findMany()
+}
+
+export const deletePuzzle = async (id: number): Promise<Puzzle | null> => {
+  return prisma.puzzle.delete({
+    where: { id },
+  })
+}
+
+export const deleteAllPuzzles = async (): Promise<{ count: number }> => {
+  return prisma.puzzle.deleteMany({})
 }

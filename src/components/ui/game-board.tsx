@@ -4,7 +4,7 @@ import React from 'react';
 interface GameBoardProps {
   guesses: string[];
   currentGuess: string;
-  expressionLength: number;
+  slots: number;
   maxGuesses: number;
   getGuessState: (guess: string, index: number) => Position;
 }
@@ -12,7 +12,7 @@ interface GameBoardProps {
 export const GameBoard: React.FC<GameBoardProps> = ({
   guesses,
   currentGuess,
-  expressionLength,
+  slots,
   maxGuesses,
   getGuessState
 }) => {
@@ -20,7 +20,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     <div className="grid grid-rows-6 gap-1 mb-8">
       {Array.from({ length: maxGuesses }).map((_, i) => (
         <div key={i} className="grid grid-cols-6 gap-1">
-          {Array.from({ length: expressionLength }).map((_, j) => {
+          {Array.from({ length: slots }).map((_, j) => {
             const isCurrentGuess = i === guesses.length;
             const char = isCurrentGuess ? currentGuess[j] : guesses[i]?.[j] || '';
             const state = !isCurrentGuess && guesses[i] ? getGuessState(guesses[i], j) : null;
