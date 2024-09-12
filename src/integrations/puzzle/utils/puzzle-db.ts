@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client'
-import { Puzzle, validatePuzzleInput } from '@/types/puzzle'
+import { PrismaClient, Puzzle } from '@prisma/client'
+import { validatePuzzleInput } from '@/types/puzzle'
 
 const prisma = new PrismaClient()
 
