@@ -1,10 +1,8 @@
-import Mathler from "@/components/mathler";
-import Image from "next/image";
+import { MathlerGame } from "@/components/mathler-game";
+
 
 export default function Home() {
   return (
-    <div>
-      <Mathler />
-    </div>
+    <MathlerGame targetNumber={12} solution="12*3/3" />
   );
 }

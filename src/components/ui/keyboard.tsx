@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Position } from '@/hooks/useSolver';
+import { Position } from '@/types/position';
 
 interface KeyboardProps {
   onInputClick: (input: string) => void;

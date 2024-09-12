@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
-
+import { evaluate } from 'mathjs';
+import { Position } from '@/types/position';
 
 // 119 - 41
 // 21 / 7 + 9
@@ -13,84 +14,50 @@ import { useState, useCallback } from 'react';
 // 132 – 59
 
 
-
-
-
-type Operator = '+' | '-' | '*' | '/';
-type ExpressionElement = number | Operator;
-
-const operators: Operator[] = ['+', '-', '*', '/'];
-
-export const useSolver = (target: number, length: number) => {
-  const [solutions, setSolutions] = useState<string[]>([]);
-
-  const generateExpressions = useCallback((current: ExpressionElement[], value: number): string[] => {
-    if (current.length === length) {
-      return value === target ? [current.join('')] : [];
-    }
-
-    let results: string[] = [];
-    const isEvenPosition = current.length % 2 === 0;
-
-    if (isEvenPosition) {
-      for (let digit = 0; digit <= 9; digit++) {
-        results = results.concat(generateExpressions([...current, digit], applyLastOperation(current, value, digit)));
-      }
-    } else {
-      operators.forEach(op => {
-        results = results.concat(generateExpressions([...current, op], value));
-      });
-    }
-
-    return results;
-  }, [target, length]);
-
-  const applyLastOperation = (current: ExpressionElement[], value: number, digit: number): number => {
-    if (current.length < 2) return digit;
-    const lastOp = current[current.length - 1] as Operator;
-    switch (lastOp) {
-      case '+': return value + digit;
-      case '-': return value - digit;
-      case '*': return value * digit;
-      case '/': return Math.trunc(value / digit);
-    }
-  };
+export const useSolver = (targetNumber: number | null, solution: string | null, length: number) => {
+  const [initialized, setInitialized] = useState(false);
 
   const initialize = useCallback(() => {
-    const newSolutions = generateExpressions([], 0);
-    setSolutions(newSolutions);
-  }, [generateExpressions]);
+    if (targetNumber !== null && solution !== null) {
+      setInitialized(true);
+    }
+  }, [targetNumber, solution]);
 
   const checkGuess = useCallback((guess: string): Position[] => {
-    if (solutions.length === 0) return [];
-    
-    const solution = solutions[0];
-    const result: Position[] = new Array(length).fill('absent');
-    const solutionCounts = new Map<string, number>();
-    
-    for (const char of solution) {
-      solutionCounts.set(char, (solutionCounts.get(char) || 0) + 1);
-    }
-       
-    for (let i = 0; i < length; i++) {
-      if (guess[i] === solution[i]) {
-        result[i] = 'correct';
-        solutionCounts.set(guess[i], solutionCounts.get(guess[i])! - 1);
-      }
-    }
-        
-    for (let i = 0; i < length; i++) {
-      if (result[i] === 'absent') {
-        const count = solutionCounts.get(guess[i]) || 0;
-        if (count > 0) {
-          result[i] = 'present';
-          solutionCounts.set(guess[i], count - 1);
-        }
-      }
-    }
-    
-    return result;
-  }, [solutions, length]);
+    if (!initialized || !solution) return Array(length).fill('absent');
 
-  return { initialize, checkGuess, solutions };
+    const result: Position[] = Array(length).fill('absent');
+    const solutionChars = solution.split('');
+    const guessChars = guess.split('');
+
+    // Check for correct positions
+    for (let i = 0; i < length; i++) {
+      if (guessChars[i] === solutionChars[i]) {
+        result[i] = 'correct';
+        solutionChars[i] = '';
+        guessChars[i] = '';
+      }
+    }
+
+    // Check for present but misplaced characters
+    for (let i = 0; i < length; i++) {
+      if (guessChars[i] && solutionChars.includes(guessChars[i])) {
+        result[i] = 'present';
+        solutionChars[solutionChars.indexOf(guessChars[i])] = '';
+      }
+    }
+
+    return result;
+  }, [initialized, solution, length]);
+
+  const validateGuess = useCallback((guess: string): boolean => {
+    if (!initialized || targetNumber === null) return false;
+    try {
+      return evaluate(guess) === targetNumber;
+    } catch {
+      return false;
+    }
+  }, [initialized, targetNumber]);
+
+  return { initialize, checkGuess, validateGuess };
 };

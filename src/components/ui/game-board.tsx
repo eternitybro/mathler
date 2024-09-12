@@ -1,5 +1,5 @@
+import { Position } from '@/types/position';
 import React from 'react';
-import { Position } from '../../hooks/useSolver';
 
 interface GameBoardProps {
   guesses: string[];

@@ -1,22 +1,25 @@
-"use client"
+'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSolver, Position } from '../hooks/useSolver';
+import { useSolver } from '../hooks/useSolver';
 import { GameBoard } from './ui/game-board';
 import { Keyboard } from './ui/keyboard';
+import { Position } from '@/types/position';
 
-
-const MAX_GUESSES = 6;
 const EXPRESSION_LENGTH = 6;
-const TARGET_NUMBER = 12; // This could be randomly generated each day
+const MAX_GUESSES = 6;
 
-const Mathler: React.FC = () => {
-  const [targetNumber, setTargetNumber] = useState(12);
-  const { initialize, checkGuess } = useSolver(TARGET_NUMBER, EXPRESSION_LENGTH);
+interface MathlerGameProps {
+  targetNumber: number;
+  solution: string;
+}
+
+export const MathlerGame: React.FC<MathlerGameProps> = ({ targetNumber, solution }) => {
+  const { initialize, checkGuess } = useSolver(targetNumber, solution, EXPRESSION_LENGTH);
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState('');
   const [gameState, setGameState] = useState<'playing' | 'won' | 'lost'>('playing');
-  const [usedInputs, setUsedInputs] = useState<Record<string, Position | null>>({});
+  const [usedInputs, setUsedInputs] = useState<Record<string, Position>>({});
 
   useEffect(() => {
     initialize();
@@ -57,10 +60,8 @@ const Mathler: React.FC = () => {
         newUsedInputs[input] = 'correct';
       } else if (result[index] === 'present' && newUsedInputs[input] !== 'correct') {
         newUsedInputs[input] = 'present';
-      } else if (result[index] === 'absent') {
-        if (!newUsedInputs[input] || newUsedInputs[input] === 'absent') {
-          newUsedInputs[input] = 'absent';
-        }
+      } else if (result[index] === 'absent' && !newUsedInputs[input]) {
+        newUsedInputs[input] = 'absent';
       }
     });
     setUsedInputs(newUsedInputs);
@@ -72,9 +73,9 @@ const Mathler: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen ">
-      <h1 className="text-4xl font-bold mb-8">Mathler</h1>
-      <p> Find the hidden calculation that equals  {targetNumber}</p>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white text-black">
+      <h1 className="text-4xl font-bold mb-2">Mathler</h1>
+      <p className="mb-8">Find the hidden calculation that equals <span className='font-bold'>{targetNumber}</span></p>
       <GameBoard
         guesses={guesses}
         currentGuess={currentGuess}
@@ -94,7 +95,6 @@ const Mathler: React.FC = () => {
         </div>
       )}
     </div>
+
   );
 };
-
-export default Mathler;

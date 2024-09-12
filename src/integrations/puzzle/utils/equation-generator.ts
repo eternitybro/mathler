@@ -1,3 +1,5 @@
+import { evaluate } from "mathjs";
+
 interface Node {
   value: number | string;
   left?: Node;
@@ -36,7 +38,7 @@ export function generateValidEquation(minResult: number, maxResult: number, maxD
     const tree = generateTree(Math.floor(Math.random() * maxDepth) + 1);
     equation = simplifyEquation(treeToEquation(tree));
     try {
-      result = eval(equation);
+      result = evaluate(equation);
     } catch {
       result = NaN;
     }
