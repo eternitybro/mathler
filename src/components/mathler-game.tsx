@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSolver } from '../hooks/useSolver';
 import { GameBoard } from './ui/game-board';
 import { Keyboard } from './ui/keyboard';
@@ -72,15 +72,14 @@ export const MathlerGame: React.FC<MathlerGameProps> = ({ targetNumber, solution
     setUsedInputs(newUsedInputs);
   };
 
-  const getGuessState = (guess: string, index: number): Position => {
+  const getGuessState = useCallback((guess: string, index: number): Position => {
     if (!guess) return 'absent';
     return checkGuess(guess)[index];
-  };
+  }, [checkGuess]);
 
   useEffect(() => {
     setShareString(generateShareString(guesses, getGuessState, MAX_GUESSES, slots))
-    console.log(shareString)
-  }, [slots, guesses, getGuessState, MAX_GUESSES])
+  }, [slots, guesses, getGuessState, shareString])
 
 
   return (
@@ -114,7 +113,6 @@ export const MathlerGame: React.FC<MathlerGameProps> = ({ targetNumber, solution
               setUsedInputs({});
             }}
             onShare={() => {
-
               navigator.clipboard.writeText(shareString)
                 .then(() => alert('Result copied to clipboard!'))
                 .catch(err => console.error('Failed to copy: ', err));
