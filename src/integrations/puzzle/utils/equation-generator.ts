@@ -36,9 +36,7 @@ export const generateValidEquation = (slots: number): { equation: string; result
         } else {         
           char = getRandomOperator();          
         }
-        equationParts.push(char);    
-        console.log('i', i)
-        console.log('equation', equationParts)   
+        equationParts.push(char);      
       }
     }
         

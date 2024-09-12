@@ -2,18 +2,6 @@ import { useState, useCallback } from 'react';
 import { evaluate } from 'mathjs';
 import { Position } from '@/types/position';
 
-// 119 - 41
-// 21 / 7 + 9
-// 90 / 9 + 7
-// 18 + 6 – 3
-// 24 * 2 – 9
-// 112 – 47
-// 27 * 3 – 9
-// 28 – 3 + 7
-// 95 / 5 + 8
-// 132 – 59
-
-
 export type UseSolverProps = {
   targetNumber: number | null;
   solution: string | null;
@@ -36,7 +24,6 @@ export const useSolver = ({ targetNumber, solution, slots }: UseSolverProps) => 
     const solutionChars = solution.split('');
     const guessChars = guess.split('');
 
-    // Check for correct positions
     for (let i = 0; i < slots; i++) {
       if (guessChars[i] === solutionChars[i]) {
         result[i] = 'correct';
@@ -45,7 +32,6 @@ export const useSolver = ({ targetNumber, solution, slots }: UseSolverProps) => 
       }
     }
 
-    // Check for present but misplaced characters
     for (let i = 0; i < slots; i++) {
       if (guessChars[i] && solutionChars.includes(guessChars[i])) {
         result[i] = 'present';

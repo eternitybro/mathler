@@ -12,7 +12,7 @@ export const PuzzleInputSchema = PuzzleDataSchema.extend({
 
 export type PuzzleData = z.infer<typeof PuzzleDataSchema>;
 export type PuzzleInput = z.infer<typeof PuzzleInputSchema>;
-export type Puzzle = Prisma.PuzzleGetPayload<{}>;
+export type Puzzle = Prisma.PuzzleGetPayload<Prisma.PuzzleDefaultArgs>;
 
 export function validatePuzzleData(data: unknown): PuzzleData {
   return PuzzleDataSchema.parse(data);

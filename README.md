@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mathler
+
+Mathler is a mathematical puzzle game inspired by Wordle. Players attempt to guess a hidden mathematical equation that equals a given target number within a limited number of tries.
+
+## Features
+
+- Daily unique mathematical puzzles (can forceRefresh if needed)
+- Server-side puzzle generation and validation
+- Client-side game logic with React
+- Prisma ORM with SQLite database for puzzle storage
+- Zod for runtime type checking and validation
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js (v14 or later)
+- npm / pnpm / yarn / bun (pick your poison)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/mathler.git
+   cd mathler
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-## Learn More
+3. Set up the database:
+   ```
+   npx prisma generate
+   npx prisma db push
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Start the development server:
+   ```
+   npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. To run tests:
+   ```
+   npm run test
+   ```
+   
+5. Open [http://localhost:3001](http://localhost:3001) in your browser to play the game.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+- `/app`: Next.js app router files
+- `/components`: React components
+- `/integrations`: Integration logic (e.g., puzzle generation, API routes)
+- `/prisma`: Prisma schema and migrations
+- `/types`: TypeScript type definitions
+- `/utils`: Utility functions (e.g., validation)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## API
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The game uses a simple API to fetch daily puzzles:
+
+- `GET /api/daily`: Retrieves the daily puzzle
+
+## Technologies Used
+
+- [Next.js](https://nextjs.org/) - React framework for server-side rendering and static site generation
+- [React](https://reactjs.org/) - JavaScript library for building user interfaces
+- [Prisma](https://www.prisma.io/) - Next-generation ORM for Node.js and TypeScript
+- [Zod](https://github.com/colinhacks/zod) - TypeScript-first schema declaration and validation library
+- [Shadcn UI](https://ui.shadcn.com/) - Re-usable components built with Radix UI and Tailwind CSS
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [TypeScript](https://www.typescriptlang.org/) - Typed superset of JavaScript
+
+## Acknowledgments
+
+- Inspired by [Wordle](https://www.nytimes.com/games/wordle/index.html)
+- Built with [Next.js](https://nextjs.org/), [React](https://reactjs.org/), and [Prisma](https://www.prisma.io/)
+- Uses [Zod](https://github.com/colinhacks/zod) for runtime type checking
+- UI components from [Shadcn UI](https://ui.shadcn.com/)
+- Styled with [Tailwind CSS](https://tailwindcss.com/)
+
+## License
+
+This project is licensed under the MIT License.
